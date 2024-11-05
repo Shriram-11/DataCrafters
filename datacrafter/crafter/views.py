@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
@@ -333,6 +334,7 @@ def upload_csv(request):
         return Response({"success": False, "message": f"Failed to process CSV: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(['GET'])
 def health_check(request):
     return Response({"success": True, "message": "working"})

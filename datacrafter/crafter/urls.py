@@ -9,5 +9,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(),
          name='token_refresh'),  # Token refresh
     path('upload_csv/', upload_csv, name='upload_csv'),  # CSV upload
-    path('health_check/', health_check, name='heath_check')
+    path('health_check/', health_check, name='health_check')
+
 ]

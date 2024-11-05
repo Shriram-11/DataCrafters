@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-3v2)3gj#b)f*ea*1#*&&iyl!%#7mstxk=3hoh84d%@@4i8u*ms
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://datacrafters.onrender.com']
+ALLOWED_HOSTS = ['https://datacrafters.onrender.com',
+                 'http://127.0.0.1:8000/', '127.0.0.1']
 
 
 # Application definition
@@ -93,7 +94,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
 }
 

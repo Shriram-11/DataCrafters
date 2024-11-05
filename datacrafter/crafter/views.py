@@ -130,8 +130,7 @@ def univariate_analysis(df):
         # Plot histogram with KDE
         plt.figure()
         sns.histplot(col_data, kde=True)
-        t = f"{column} Distribution\nSkewness:{
-            skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
+        t = f"{column} Distribution\nSkewness:{skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
         plt.title(t)
         plt.xlabel(column)
         plt.ylabel('Frequency')

@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3v2)3gj#b)f*ea*1#*&&iyl!%#7mstxk=3hoh84d%@@4i8u*ms'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://datacrafters.onrender.com']
 
 
 # Application definition

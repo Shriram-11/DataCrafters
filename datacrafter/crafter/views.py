@@ -195,8 +195,6 @@ def upload_csv(request):
             "multivariate_analysis": multivariate_analysis(df),
             "normality_skewness_analysis": normality_skewness_analysis(df)
         }
-        print(eda_report['normality_skewness_analysis'])
-
         return Response({"success": True, "message": "CSV uploaded successfully", "data": eda_report}, status=status.HTTP_200_OK)
 
     except Exception as e:

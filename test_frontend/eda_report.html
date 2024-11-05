@@ -3,94 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <title>EDA Report</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <h2>EDA Report</h2>
     <div id="reportContainer"></div>
-
-    <script>
-      // Retrieve EDA data from local storage
-      const edaData = JSON.parse(localStorage.getItem("edaData"));
-      const reportContainer = document.getElementById("reportContainer");
-
-      if (edaData) {
-        reportContainer.innerHTML = `
-                <h3>Dataset Overview</h3>
-                <pre>${JSON.stringify(edaData.dataset_overview, null, 2)}</pre>
-                
-                <h3>Descriptive Statistics</h3>
-                <pre>${JSON.stringify(
-                  edaData.descriptive_statistics,
-                  null,
-                  2
-                )}</pre>
-
-                <h3>Data Quality Analysis</h3>
-                <p>Duplicates Count: ${
-                  edaData.data_quality_analysis.duplicates_count
-                }</p>
-                
-                <h4>Missing Data Summary (Percentage)</h4>
-                <pre>${JSON.stringify(
-                  edaData.data_quality_analysis.missing_data_summary,
-                  null,
-                  2
-                )}</pre>
-                
-                ${
-                  edaData.data_quality_analysis.missing_data_pattern
-                    ? `<img src="data:image/png;base64,${edaData.data_quality_analysis.missing_data_pattern}" alt="Missing Data Pattern">`
-                    : "<p>No missing data to visualize.</p>"
-                }
-
-                <h3>Univariate Analysis</h3>
-                ${Object.keys(edaData.univariate_analysis.histograms)
-                  .map(
-                    (col) => `
-                    <h4>${col} Histogram</h4>
-                    <img src="data:image/png;base64,${edaData.univariate_analysis.histograms[col]}" alt="${col} Histogram">
-                `
-                  )
-                  .join("")}
-                
-                <h3>Bivariate Analysis</h3>
-                <img src="data:image/png;base64,${
-                  edaData.bivariate_analysis.correlation_matrix
-                }" alt="Correlation Matrix">
-                
-                <h3>Normalization Analysis</h3>
-                ${
-                  edaData.normality_skewness_analysis
-                    ? Object.keys(edaData.normality_skewness_analysis)
-                        .map((col) => {
-                          const colData =
-                            edaData.normality_skewness_analysis[col];
-                          return `
-                          <div>
-                            <h4>${col}</h4>
-                            <p>Skewness: ${colData.skewness.toFixed(2)}</p>
-                            <p>Normality Test p-value: ${colData.normality_test_pvalue.toFixed(
-                              4
-                            )}</p>
-                            <p>Is Normal: ${
-                              colData.is_normal ? "Yes" : "No"
-                            }</p>
-                            <img src="data:image/png;base64,${
-                              colData.distribution_plot
-                            }" alt="${col} Distribution Plot">
-                          </div>
-                        `;
-                        })
-                        .join("")
-                    : "<p>No normalization data available.</p>"
-                }
-
-                <!-- Add more sections as per your EDA data structure -->
-            `;
-      } else {
-        reportContainer.innerHTML =
-          "<p>No EDA data found. Please upload a CSV file first.</p>";
-      }
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>

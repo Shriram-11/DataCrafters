@@ -129,7 +129,8 @@ def univariate_analysis(df):
         # Plot histogram with KDE
         plt.figure()
         sns.histplot(col_data, kde=True)
-        t = f"{column} Distribution\nSkewness:{skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
+        t = f"{column} Distribution\nSkewness:{
+            skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
         plt.title(t)
         plt.xlabel(column)
         plt.ylabel('Frequency')
@@ -330,3 +331,8 @@ def upload_csv(request):
     except Exception as e:
         # Handle any errors with reading the CSV
         return Response({"success": False, "message": f"Failed to process CSV: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def health_check(request):
+    return Response({"success": True, "message": "working"})

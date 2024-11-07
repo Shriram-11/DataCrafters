@@ -24,12 +24,12 @@ matplotlib.use('Agg')
 
 
 def encode_plot(plt):
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    image_base64 = base64.b64encode(buf.read()).decode("utf-8")
-    buf.close()
-    plt.close()
+    with io.BytesIO() as buf:
+        # Use tight layout for cleaner images
+        plt.savefig(buf, format="png", bbox_inches="tight")
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.read()).decode("utf-8")
+    plt.close()  # Ensures plot closes after encoding
     return image_base64
 
 # 1. Dataset Overview
@@ -130,7 +130,8 @@ def univariate_analysis(df):
         # Plot histogram with KDE
         plt.figure()
         sns.histplot(col_data, kde=True)
-        t = f"{column} Distribution\nSkewness:{skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
+        t = f"{column} Distribution\nSkewness:{
+            skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
         plt.title(t)
         plt.xlabel(column)
         plt.ylabel('Frequency')
@@ -170,6 +171,7 @@ def bivariate_analysis(df):
 # 7. Advanced Correlation Analysis
 
 
+'''
 def advanced_correlation_analysis(df, target_col=None):
     results = {}
 
@@ -195,7 +197,7 @@ def advanced_correlation_analysis(df, target_col=None):
     results['pairplot'] = pairplot_image
 
     return results
-
+'''
 # 8. Clustering Analysis
 
 
@@ -312,6 +314,7 @@ def upload_csv(request):
 
         # Store DataFrame in cache
         cache.set('csv_data', df)
+        # "advanced_correlation_analysis": advanced_correlation_analysis(df),
 
         # Prepare EDA report
         eda_report = {
@@ -321,7 +324,6 @@ def upload_csv(request):
             "outlier_analysis": outlier_analysis(df),
             "univariate_analysis": univariate_analysis(df),
             "bivariate_analysis": bivariate_analysis(df),
-            "advanced_correlation_analysis": advanced_correlation_analysis(df),
             "clustering_analysis": clustering_analysis(df),
             "data_cleaning_suggestions": data_cleaning_suggestions(df),
             "feature_engineering_suggestions": feature_engineering_suggestions(df)

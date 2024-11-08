@@ -167,8 +167,7 @@ def outlier_analysis(df):
             Q1 = col_data.quantile(0.25)
             Q3 = col_data.quantile(0.75)
             IQR = Q3 - Q1
-            iqr_outliers = col_data[(col_data < (Q1 - 1.5 * IQR))
-                                    | (col_data > (Q3 + 1.5 * IQR))].count()
+            iqr_outliers = col_data[(col_data < (Q1 - 1.5 * IQR)) | (col_data > (Q3 + 1.5 * IQR))].count()
 
             # Visualize outliers using boxplot
             sns.boxplot(x=col_data)
@@ -211,8 +210,7 @@ def univariate_analysis(df):
             # Plot histogram with KDE
             plt.figure()
             sns.histplot(col_data, kde=True)
-            t = f"{column} Distribution\nSkewness:{
-                skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
+            t = f"{column} Distribution\nSkewness:{skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
             plt.title(t)
             plt.xlabel(column)
             plt.ylabel('Frequency')
@@ -258,8 +256,7 @@ def bivariate_analysis(df):
 
         # Plotting the heatmap
         plt.figure(figsize=(10, 8))
-        heatmap = sns.heatmap(correlation_matrix, annot=True,
-                              cmap="coolwarm", fmt=".2f", linewidths=0.5)
+        heatmap = sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
         plt.title("Correlation Matrix")
 
         # Encode the plot

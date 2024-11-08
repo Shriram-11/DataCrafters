@@ -24,6 +24,18 @@ matplotlib.use('Agg')
 
 
 def encode_plot(plt):
+    """
+    Encodes a matplotlib plot as a base64 string for JSON response.
+
+    Parameters:
+    plt (matplotlib.pyplot): The pyplot instance with the plot.
+
+    Returns:
+    str: Base64 encoded string of the plot image.
+
+    Raises:
+    Exception: If an error occurs in encoding, prints a message with details.
+    """
     with io.BytesIO() as buf:
         # Use tight layout for cleaner images
         plt.savefig(buf, format="png", bbox_inches="tight")
@@ -36,135 +48,226 @@ def encode_plot(plt):
 
 
 def dataset_overview(df):
-    return {
-        "shape": df.shape,
-        "columns": df.dtypes.apply(str).to_dict(),
-        "missing_values": df.isnull().sum().to_dict(),
-        "unique_values": df.nunique().to_dict()
-    }
+    """
+    Generate a summary overview of the dataset.
 
-# 2. Descriptive Statistics
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
+
+    Returns:
+    dict: A dictionary containing dataset shape, column types,
+          missing values per column, and unique values per column.
+
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        return {
+            "shape": df.shape,
+            "columns": df.dtypes.apply(str).to_dict(),
+            "missing_values": df.isnull().sum().to_dict(),
+            "unique_values": df.nunique().to_dict()
+        }
+    except Exception as e:
+        print(f"Error in dataset_overview function: {str(e)}")
+
+ # 2. Descriptive Statistics
 
 
 def descriptive_statistics(df):
-    stats = {}
-    # Numeric columns
-    numeric_summary = df.describe().to_dict()
-    stats['numeric_summary'] = numeric_summary
-    # Categorical columns
-    categorical_cols = df.select_dtypes(include='object').columns
-    stats['categorical_summary'] = {
-        col: df[col].value_counts().to_dict() for col in categorical_cols
-    }
-    return stats
+    """
+    Calculate descriptive statistics for numeric columns in the dataset.
 
-# 3. Data Quality Analysis
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
+
+    Returns:
+    dict: A dictionary with descriptive statistics (count, mean, std, min, 25%, 50%, 75%, max)
+          for each numeric column.
+
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        stats = {}
+        # Numeric columns
+        numeric_summary = df.describe().to_dict()
+        stats['numeric_summary'] = numeric_summary
+        # Categorical columns
+        categorical_cols = df.select_dtypes(include='object').columns
+        stats['categorical_summary'] = {
+            col: df[col].value_counts().to_dict() for col in categorical_cols
+        }
+        return stats
+    except Exception as e:
+        print(f"Error in descriptive_statistics function: {str(e)}")
 
 
 def data_quality_analysis(df):
-    # Count duplicates
-    duplicates_count = df.duplicated().sum()
+    """
+    Perform data quality analysis to detect missing and duplicated values.
 
-    # Calculate missing values
-    missing_data = df.isnull().mean() * 100  # Percentage of missing values
-    # Filter columns with missing data
-    missing_data = missing_data[missing_data > 0]
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
 
-    # Check if there are any missing values to plot
-    if not missing_data.empty:
-        plt.figure(figsize=(10, 6))
-        sns.barplot(x=missing_data.index, y=missing_data.values)
-        plt.xticks(rotation=45)
-        plt.ylabel("Percentage of Missing Values")
-        plt.title("Missing Data Percentage by Column")
-        missing_data_pattern_image = encode_plot(plt)
-    else:
-        missing_data_pattern_image = None  # No missing data to visualize
+    Returns:
+    dict: A dictionary with missing values per column and total duplicated rows.
 
-    return {
-        "duplicates_count": duplicates_count,
-        "missing_data_pattern": missing_data_pattern_image,
-        # Return missing data as a dictionary
-        "missing_data_summary": missing_data.to_dict()
-    }
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        # Count duplicates
+        duplicates_count = df.duplicated().sum()
 
-# 4. Outlier Analysis
+        # Calculate missing values
+        missing_data = df.isnull().mean() * 100  # Percentage of missing values
+        # Filter columns with missing data
+        missing_data = missing_data[missing_data > 0]
+
+        # Check if there are any missing values to plot
+        if not missing_data.empty:
+            plt.figure(figsize=(10, 6))
+            sns.barplot(x=missing_data.index, y=missing_data.values)
+            plt.xticks(rotation=45)
+            plt.ylabel("Percentage of Missing Values")
+            plt.title("Missing Data Percentage by Column")
+            missing_data_pattern_image = encode_plot(plt)
+        else:
+            missing_data_pattern_image = None  # No missing data to visualize
+
+        return {
+            "duplicates_count": duplicates_count,
+            "missing_data_pattern": missing_data_pattern_image,
+            # Return missing data as a dictionary
+            "missing_data_summary": missing_data.to_dict()
+        }
+    except Exception as e:
+        print(f"Error in data_quality_analysis function: {str(e)}")
 
 
 def outlier_analysis(df):
-    outlier_info = {}
-    for column in df.select_dtypes(include=['number']).columns:
-        col_data = df[column].dropna()
-        # IQR method
-        Q1 = col_data.quantile(0.25)
-        Q3 = col_data.quantile(0.75)
-        IQR = Q3 - Q1
-        iqr_outliers = col_data[(col_data < (Q1 - 1.5 * IQR)) | (col_data > (Q3 + 1.5 * IQR))].count()
+    """
+    Identify and visualize outliers in the numeric columns using the IQR method.
 
-        # Visualize outliers using boxplot
-        sns.boxplot(x=col_data)
-        boxplot_image = encode_plot(plt)
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
 
-        # Save analysis
-        outlier_info[column] = {
-            "iqr_outliers_count": int(iqr_outliers),
-            "boxplot_image": boxplot_image
-        }
-    return outlier_info
+    Returns:
+    dict: A dictionary containing outlier counts and encoded boxplot images for each numeric column.
 
-# 5. Univariate Analysis
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        outlier_info = {}
+        for column in df.select_dtypes(include=['number']).columns:
+            col_data = df[column].dropna()
+            # IQR method
+            Q1 = col_data.quantile(0.25)
+            Q3 = col_data.quantile(0.75)
+            IQR = Q3 - Q1
+            iqr_outliers = col_data[(col_data < (Q1 - 1.5 * IQR))
+                                    | (col_data > (Q3 + 1.5 * IQR))].count()
+
+            # Visualize outliers using boxplot
+            sns.boxplot(x=col_data)
+            boxplot_image = encode_plot(plt)
+
+            # Save analysis
+            outlier_info[column] = {
+                "iqr_outliers_count": int(iqr_outliers),
+                "boxplot_image": boxplot_image
+            }
+        return outlier_info
+    except Exception as e:
+        print(f"Error in outlier_analysis function: {str(e)}")
 
 
 def univariate_analysis(df):
-    analysis = {}
+    """
+    Perform univariate analysis to calculate frequency distributions for categorical columns.
 
-    for column in df.select_dtypes(include=['number']).columns:
-        col_data = df[column].dropna()
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
 
-        # Skewness and Shapiro-Wilk normality test
-        skewness_value = skew(col_data)
-        shapiro_test = shapiro(col_data)
-        is_normal = shapiro_test.pvalue > 0.05
+    Returns:
+    dict: A dictionary with frequency distributions for each categorical column.
 
-        # Plot histogram with KDE
-        plt.figure()
-        sns.histplot(col_data, kde=True)
-        t = f"{column} Distribution\nSkewness:{skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
-        plt.title(t)
-        plt.xlabel(column)
-        plt.ylabel('Frequency')
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        analysis = {}
 
-        # Encode the plot
-        distribution_image = encode_plot(plt)
+        for column in df.select_dtypes(include=['number']).columns:
+            col_data = df[column].dropna()
 
-        # Record results in analysis dictionary
-        analysis[column] = {
-            "skewness": skewness_value,
-            "normality_test_pvalue": shapiro_test.pvalue,
-            "is_normal": is_normal,
-            "distribution_plot": distribution_image
-        }
+            # Skewness and Shapiro-Wilk normality test
+            skewness_value = skew(col_data)
+            shapiro_test = shapiro(col_data)
+            is_normal = shapiro_test.pvalue > 0.05
 
-    # Categorical columns
-    barplots = {}
-    for column in df.select_dtypes(include=['object']).columns:
-        plt.figure()
-        sns.countplot(y=df[column])
-        plt.title(f"{column} Distribution")
-        plt.xlabel('Frequency')
+            # Plot histogram with KDE
+            plt.figure()
+            sns.histplot(col_data, kde=True)
+            t = f"{column} Distribution\nSkewness:{
+                skewness_value:.2f}, p-value: {shapiro_test.pvalue:.3f}"
+            plt.title(t)
+            plt.xlabel(column)
+            plt.ylabel('Frequency')
 
-        # Encode the plot
-        barplots[column] = encode_plot(plt)
+            # Encode the plot
+            distribution_image = encode_plot(plt)
 
-    return {"numeric_analysis": analysis, "categorical_barplots": barplots}
+            # Record results in analysis dictionary
+            analysis[column] = {
+                "skewness": skewness_value,
+                "normality_test_pvalue": shapiro_test.pvalue,
+                "is_normal": is_normal,
+                "distribution_plot": distribution_image
+            }
+
+        # Categorical columns
+        barplots = {}
+        for column in df.select_dtypes(include=['object']).columns:
+            plt.figure()
+            sns.countplot(y=df[column])
+            plt.title(f"{column} Distribution")
+            plt.xlabel('Frequency')
+
+            # Encode the plot
+            barplots[column] = encode_plot(plt)
+
+        return {"numeric_analysis": analysis, "categorical_barplots": barplots}
+    except Exception as e:
+        print(f"Error in univariate_analysis function: {str(e)}")
 
 # 6. Bivariate Analysis
 
 
 def bivariate_analysis(df):
-    correlation_matrix = sns.heatmap(df.corr(), annot=True)
-    correlation_image = encode_plot(plt)
-    return {"correlation_matrix": correlation_image}
+    try:
+        numeric_columns = df.select_dtypes(include=['number'])
+
+        if numeric_columns.empty:
+            return {"message": "No numeric columns available for correlation analysis"}
+
+        # Generate correlation matrix for numeric columns only
+        correlation_matrix = numeric_columns.corr()
+
+        # Plotting the heatmap
+        plt.figure(figsize=(10, 8))
+        heatmap = sns.heatmap(correlation_matrix, annot=True,
+                              cmap="coolwarm", fmt=".2f", linewidths=0.5)
+        plt.title("Correlation Matrix")
+
+        # Encode the plot
+        correlation_image = encode_plot(plt)
+        return {"correlation_matrix": correlation_image}
+    except Exception as e:
+        print(f"Error in bivariate: {e}")
+
 
 # 7. Advanced Correlation Analysis
 
@@ -200,74 +303,149 @@ def advanced_correlation_analysis(df, target_col=None):
 
 
 def clustering_analysis(df, n_clusters=3):
-    # Select numeric columns
-    numeric_data = df.select_dtypes(include=['number']).dropna()
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-    labels = kmeans.fit_predict(numeric_data)
-    df['cluster'] = labels
+    """
+    Perform KMeans clustering on numeric columns and visualize the clusters using PCA.
 
-    # PCA for 2D visualization
-    pca = PCA(n_components=2)
-    pca_result = pca.fit_transform(numeric_data)
-    plt.scatter(pca_result[:, 0], pca_result[:, 1], c=labels, cmap='viridis')
-    plt.title('Clustering Visualization')
-    plt.xlabel('PCA Component 1')
-    plt.ylabel('PCA Component 2')
-    cluster_plot = encode_plot(plt)
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
+    n_clusters (int): The number of clusters to form with KMeans.
 
-    return {"cluster_plot": cluster_plot}
+    Returns:
+    dict: A dictionary containing the encoded cluster plot image.
+
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        # Select numeric columns
+        numeric_data = df.select_dtypes(include=['number']).dropna()
+
+        if numeric_data.shape[1] < 2:
+            return {"message": "Not enough numeric features for clustering analysis"}
+
+        # Perform KMeans clustering
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+        labels = kmeans.fit_predict(numeric_data)
+        df['cluster'] = labels
+
+        # Perform PCA for 2D visualization
+        pca = PCA(n_components=2)
+        pca_result = pca.fit_transform(numeric_data)
+
+        # Retrieve explained variance ratio
+        explained_var = pca.explained_variance_ratio_
+
+        # Plotting the clusters with PCA components labeled by explained variance
+        plt.figure(figsize=(10, 7))
+        scatter = plt.scatter(
+            pca_result[:, 0],
+            pca_result[:, 1],
+            c=labels,
+            cmap='viridis',
+            alpha=0.6,
+            edgecolor='k'
+        )
+        plt.title('Clustering Visualization with PCA')
+        plt.xlabel(f'PCA Component 1 ({explained_var[0]*100:.2f}% Variance)')
+        plt.ylabel(f'PCA Component 2 ({explained_var[1]*100:.2f}% Variance)')
+        plt.colorbar(scatter, label='Cluster')
+
+        # Encode the plot
+        cluster_plot = encode_plot(plt)
+
+        return {"cluster_plot": cluster_plot}
+    except Exception as e:
+        print(f"Error in clustering_analysis function: {str(e)}")
+
 
 # 9. Data Cleaning and Scaling Suggestions
 
 
 def data_cleaning_suggestions(df):
-    cleaning_suggestions = {
-        "missing_value_imputation": {"mean_median": [], "mode_forward_fill": []},
-        "scaling_normalization": []
-    }
+    """
+    Provide data cleaning suggestions, including imputation for missing values and scaling recommendations.
 
-    # Missing value imputation recommendations
-    missing_cols = df.columns[df.isnull().mean() > 0]
-    for col in missing_cols:
-        col_type = df[col].dtype
-        if col_type in ['int64', 'float64']:
-            # Consider mean/median imputation.
-            cleaning_suggestions["missing_value_imputation"]["mean_median"].append(
-                col)
-        else:
-            # Consider mode or forward-fill imputation.
-            cleaning_suggestions["missing_value_imputation"]["mode_forward_fill"].append(
-                col)
-    # Scaling recommendations
-    for col in df.select_dtypes(include=['number']).columns:
-        if df[col].max() > 100:  # Arbitrary threshold for scaling suggestion
-            cleaning_suggestions["scaling_normalization"].append(col)
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
 
-    return cleaning_suggestions
+    Returns:
+    dict: A dictionary containing missing value imputation and scaling suggestions.
 
-# 10. Feature Engineering
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        cleaning_suggestions = {
+            "missing_value_imputation": {"Consider mean/median imputation.": [], "Consider mode or forward-fill imputation.": []},
+            "Arbitrary threshold for scaling": []
+        }
+
+        # Missing value imputation recommendations
+        missing_cols = df.columns[df.isnull().mean() > 0]
+        for col in missing_cols:
+            col_type = df[col].dtype
+            if col_type in ['int64', 'float64']:
+                # Consider mean/median imputation.
+                cleaning_suggestions["missing_value_imputation"]["Consider mean/median imputation."].append(
+                    col)
+            else:
+                # Consider mode or forward-fill imputation.
+                cleaning_suggestions["missing_value_imputation"]["Consider mode or forward-fill imputation."].append(
+                    col)
+        # Scaling recommendations
+        for col in df.select_dtypes(include=['number']).columns:
+            if df[col].max() > 100:  # Arbitrary threshold for scaling suggestion
+                cleaning_suggestions["Arbitrary threshold for scaling"].append(
+                    col)
+
+        return cleaning_suggestions
+    except Exception as e:
+        print(f"Error in data_cleaning_suggestions function: {str(e)}")
 
 
 def feature_engineering_suggestions(df):
-    suggestions = {"encoding": [],
-                   "transformation": []}
+    """
+    Provide feature engineering suggestions, including encoding and transformation recommendations.
 
-    # High cardinality categorical columns
-    categorical_cols = df.select_dtypes(include='object').columns
-    for col in categorical_cols:
-        if df[col].nunique() > 3:  # Define high cardinality threshold as needed
-            # "Consider encoding techniques like target encoding."
-            suggestions["encoding"].append(col)
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the dataset.
 
-    # Numeric column transformations
-    numeric_cols = df.select_dtypes(include=['number']).columns
-    for col in numeric_cols:
-        skewness_value = skew(df[col].dropna())
-        if abs(skewness_value) > 1:  # Threshold for suggesting transformation
-            # "Consider log or square-root transformation"
-            suggestions["transformation"].append(col)
+    Returns:
+    dict: A dictionary with encoding and transformation suggestions for feature engineering.
 
-    return suggestions
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
+    try:
+        suggestions = {"Consider one-hot encoding": [],
+                       "Consider target encoding or frequency encoding": [],
+                       "Consider log or square-root transformation": []}
+
+        # High cardinality categorical columns
+        categorical_cols = df.select_dtypes(include='object').columns
+        for col in categorical_cols:
+            unique_vals = df[col].nunique()
+            if 2 <= unique_vals <= 10:  # Adjust threshold as needed
+                # Suggest One-Hot Encoding for low cardinality
+                suggestions["Consider one-hot encoding"].append(col)
+            else:
+                # Suggest other techniques for high cardinality
+                suggestions["Consider target encoding or frequency encoding"].append(
+                    col)
+
+        # Numeric column transformations
+        numeric_cols = df.select_dtypes(include=['number']).columns
+        for col in numeric_cols:
+            skewness_value = skew(df[col].dropna())
+            if abs(skewness_value) > 1:  # Threshold for suggesting transformation
+                # "Consider log or square-root transformation"
+                suggestions["Consider log or square-root transformation"].append(
+                    col)
+
+        return suggestions
+    except Exception as e:
+        print(f"Error in feature_engineering_suggestions function: {str(e)}")
+
 
 # endponits
 
@@ -275,6 +453,18 @@ def feature_engineering_suggestions(df):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
+    """
+    API endpoint to handle user signup.
+
+    Parameters:
+    request (HttpRequest): The HTTP request containing 'username' and 'password' data.
+
+    Returns:
+    Response: A response with a success or failure message for the signup process.
+
+    Raises:
+    None
+    """
     username = request.data.get('username')
     password = request.data.get('password')
     if not username or not password:
@@ -291,6 +481,18 @@ class LoginView(TokenObtainPairView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """
+        API endpoint to handle user login using JWT tokens.
+
+        Parameters:
+        request (HttpRequest): The HTTP request containing 'username' and 'password' data.
+
+        Returns:
+        Response: A response with a success or failure message for the login process, including JWT tokens.
+
+        Raises:
+        None
+        """
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
             return Response({"success": True, "message": "Logged in successfully", "data": response.data}, status=status.HTTP_200_OK)
@@ -302,6 +504,18 @@ class LoginView(TokenObtainPairView):
 @permission_classes([permissions.IsAuthenticated])
 @parser_classes([MultiPartParser])
 def upload_csv(request):
+    """
+    API endpoint to upload a CSV file and perform an EDA report generation.
+
+    Parameters:
+    request (HttpRequest): The HTTP request containing the CSV file in 'csv_file'.
+
+    Returns:
+    Response: A response with the EDA report or an error message if processing fails.
+
+    Raises:
+    Exception: If an error occurs in processing, prints a message with details.
+    """
     if 'csv_file' not in request.FILES:
         return Response({"success": False, "message": "File not found"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -326,6 +540,7 @@ def upload_csv(request):
             "data_cleaning_suggestions": data_cleaning_suggestions(df),
             "feature_engineering_suggestions": feature_engineering_suggestions(df)
         }
+        print("all okay")
         return Response({"success": True, "message": "CSV uploaded successfully", "data": eda_report}, status=status.HTTP_200_OK)
 
     except Exception as e:
@@ -336,4 +551,16 @@ def upload_csv(request):
 @csrf_exempt
 @api_view(['GET'])
 def health_check(request):
+    """
+    API endpoint to check the health/status of the server.
+
+    Parameters:
+    request (HttpRequest): The HTTP GET request.
+
+    Returns:
+    Response: A response indicating the server is working.
+
+    Raises:
+    None
+    """
     return Response({"success": True, "message": "working"})

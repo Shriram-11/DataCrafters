@@ -522,7 +522,7 @@ def upload_csv(request):
         df = pd.read_csv(csv_file)
 
         # Store DataFrame in cache
-        cache.set('csv_data', df)
+        #cache.set('csv_data', df)
         # "advanced_correlation_analysis": advanced_correlation_analysis(df),
 
         # Prepare EDA report

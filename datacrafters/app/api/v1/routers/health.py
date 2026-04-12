@@ -31,7 +31,7 @@ class HealthResponse(BaseModel):
 def health_check() -> HealthResponse:
     """Check service health and return diagnostics."""
     temp_size = TempFileManager.get_directory_size_mb()
-    
+
     return HealthResponse(
         status="ok",
         app_name=settings.app_name,

@@ -15,19 +15,21 @@ from datacrafters.app.api.v1.routers import health
 async def lifespan(app: FastAPI):
     """Manage app lifecycle: startup and shutdown."""
     # Startup
-    logger.info("app_startup", app_name=settings.app_name, debug=settings.debug)
+    logger.info("app_startup", app_name=settings.app_name,
+                debug=settings.debug)
     TempFileManager.cleanup_directory()
-    
+
     yield
-    
+
     # Shutdown
     logger.info("app_shutdown")
-    TempFileManager.cleanup_directory(max_age_seconds=0)  # Clean all temp files
+    TempFileManager.cleanup_directory(
+        max_age_seconds=0)  # Clean all temp files
 
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
-    
+
     app = FastAPI(
         title=settings.app_name,
         description="Ephemeral CSV processing API",
@@ -35,7 +37,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         debug=settings.debug,
     )
-    
+
     # Exception handlers
     @app.exception_handler(DataCraftersException)
     async def datacrafters_exception_handler(request, exc: DataCraftersException):
@@ -46,7 +48,7 @@ def create_app() -> FastAPI:
                 "details": exc.details,
             },
         )
-    
+
     @app.exception_handler(Exception)
     async def general_exception_handler(request, exc: Exception):
         logger.error(
@@ -61,8 +63,8 @@ def create_app() -> FastAPI:
                 "details": {} if not settings.debug else {"exception": str(exc)},
             },
         )
-    
+
     # Include routers
     app.include_router(health.router)
-    
+
     return app

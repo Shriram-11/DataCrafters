@@ -16,7 +16,7 @@ def test_health_endpoint(client):
     """Test health endpoint returns 200 with expected schema."""
     response = client.get("/api/v1/health")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert data["status"] == "ok"
     assert data["app_name"] == "datacrafters"
@@ -29,7 +29,7 @@ def test_health_response_schema(client):
     """Test health response contains all required fields."""
     response = client.get("/api/v1/health")
     data = response.json()
-    
+
     required_fields = {
         "status",
         "app_name",

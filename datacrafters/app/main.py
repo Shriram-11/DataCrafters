@@ -8,7 +8,7 @@ from datacrafters.app.core.config import settings
 from datacrafters.app.core.logging import logger
 from datacrafters.app.core.errors import DataCraftersException
 from datacrafters.app.core.tempfiles import TempFileManager
-from datacrafters.app.api.v1.routers import health
+from datacrafters.app.api.v1.routers import health, process
 
 
 @asynccontextmanager
@@ -66,5 +66,6 @@ def create_app() -> FastAPI:
 
     # Include routers
     app.include_router(health.router)
+    app.include_router(process.router)
 
     return app

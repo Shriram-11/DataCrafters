@@ -7,6 +7,8 @@ from fastapi.responses import JSONResponse
 from controllers.health_controller import router as health_router
 from controllers.analysis_controller import router as analysis_router
 from controllers.process_controller import router as process_router
+from controllers.profile_controller import router as profile_router
+from controllers.quality_controller import router as quality_router
 from settings import settings
 from utils.errors import DataCraftersException
 from utils.logging import logger
@@ -57,6 +59,8 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(process_router)
     app.include_router(analysis_router)
+    app.include_router(profile_router)
+    app.include_router(quality_router)
     return app
 
 

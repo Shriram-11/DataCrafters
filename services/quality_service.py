@@ -20,7 +20,8 @@ class QualityService:
 
         duplicates_count = int(df.duplicated().sum())
         missing_count = int(df.isnull().sum().sum())
-        completeness_score = round((1 - (missing_count / total_cells)) * 100, 3)
+        completeness_score = round(
+            (1 - (missing_count / total_cells)) * 100, 3)
 
         missing_by_column = {
             col: {
@@ -39,7 +40,8 @@ class QualityService:
             q1 = series.quantile(0.25)
             q3 = series.quantile(0.75)
             iqr = q3 - q1
-            outliers = series[(series < (q1 - 1.5 * iqr)) | (series > (q3 + 1.5 * iqr))]
+            outliers = series[(series < (q1 - 1.5 * iqr)) |
+                              (series > (q3 + 1.5 * iqr))]
             outlier_counts[col] = int(outliers.count())
 
         return {
@@ -74,6 +76,7 @@ class QualityService:
         except CSVFormatError:
             raise
         except Exception as exc:
-            raise ProcessingError(f"Failed to run quality checks: {str(exc)}") from exc
+            raise ProcessingError(
+                f"Failed to run quality checks: {str(exc)}") from exc
         finally:
             await file.close()

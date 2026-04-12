@@ -68,6 +68,7 @@ class ProfileService:
         except CSVFormatError:
             raise
         except Exception as exc:
-            raise ProcessingError(f"Failed to profile CSV: {str(exc)}") from exc
+            raise ProcessingError(
+                f"Failed to profile CSV: {str(exc)}") from exc
         finally:
             await file.close()

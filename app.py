@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from controllers.health_controller import router as health_router
+from controllers.analysis_controller import router as analysis_router
 from controllers.process_controller import router as process_router
 from settings import settings
 from utils.errors import DataCraftersException
@@ -55,6 +56,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health_router)
     app.include_router(process_router)
+    app.include_router(analysis_router)
     return app
 
 

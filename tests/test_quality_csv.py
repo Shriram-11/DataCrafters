@@ -10,7 +10,7 @@ def test_quality_csv_returns_expected_sections():
     csv_content = b"age,score,city\n21,72,NY\n21,72,NY\n,81,SF\n25,91,NY\n"
 
     response = client.post(
-        "/api/v1/quality/csv",
+        "/api/v2/analysis/quality/csv",
         files={"file": ("quality.csv", csv_content, "text/csv")},
     )
 
@@ -30,7 +30,7 @@ def test_quality_csv_returns_expected_sections():
 def test_quality_csv_rejects_non_csv():
     client = TestClient(create_app())
     response = client.post(
-        "/api/v1/quality/csv",
+        "/api/v2/analysis/quality/csv",
         files={"file": ("quality.txt", b"hello", "text/plain")},
     )
 

@@ -10,7 +10,7 @@ def test_correlation_csv_returns_matrix_and_pairs():
     csv_content = b"x,y,z\n1,2,3\n2,4,6\n3,6,9\n"
 
     response = client.post(
-        "/api/v1/correlation/csv",
+        "/api/v2/analysis/correlation/csv",
         files={"file": ("corr.csv", csv_content, "text/csv")},
     )
 
@@ -26,7 +26,7 @@ def test_correlation_csv_returns_matrix_and_pairs():
 def test_correlation_csv_rejects_non_csv():
     client = TestClient(create_app())
     response = client.post(
-        "/api/v1/correlation/csv",
+        "/api/v2/analysis/correlation/csv",
         files={"file": ("corr.txt", b"x", "text/plain")},
     )
     assert response.status_code == 400

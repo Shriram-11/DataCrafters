@@ -16,7 +16,7 @@ def test_recommendations_csv_returns_column_recommendations():
     )
 
     response = client.post(
-        "/api/v1/recommendations/csv",
+        "/api/v2/analysis/recommendations/csv",
         files={"file": ("rec.csv", csv_content, "text/csv")},
     )
 
@@ -30,7 +30,7 @@ def test_recommendations_csv_returns_column_recommendations():
 def test_recommendations_csv_rejects_non_csv():
     client = TestClient(create_app())
     response = client.post(
-        "/api/v1/recommendations/csv",
+        "/api/v2/analysis/recommendations/csv",
         files={"file": ("rec.txt", b"x", "text/plain")},
     )
     assert response.status_code == 400

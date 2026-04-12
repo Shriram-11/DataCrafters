@@ -10,7 +10,7 @@ def test_profile_csv_returns_expected_sections():
     csv_content = b"age,score,city\n21,72,NY\n33,81,SF\n25,91,NY\n"
 
     response = client.post(
-        "/api/v1/profile/csv",
+        "/api/v2/analysis/profile/csv",
         files={"file": ("profile.csv", csv_content, "text/csv")},
     )
 
@@ -31,7 +31,7 @@ def test_profile_csv_returns_expected_sections():
 def test_profile_csv_rejects_non_csv():
     client = TestClient(create_app())
     response = client.post(
-        "/api/v1/profile/csv",
+        "/api/v2/analysis/profile/csv",
         files={"file": ("profile.txt", b"hello", "text/plain")},
     )
 

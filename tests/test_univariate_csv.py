@@ -10,7 +10,7 @@ def test_univariate_csv_returns_numeric_and_categorical_stats():
     csv_content = b"age,score,city\n21,72,NY\n33,81,SF\n25,91,NY\n"
 
     response = client.post(
-        "/api/v1/univariate/csv",
+        "/api/v2/analysis/univariate/csv",
         files={"file": ("uni.csv", csv_content, "text/csv")},
     )
 
@@ -26,7 +26,7 @@ def test_univariate_csv_returns_numeric_and_categorical_stats():
 def test_univariate_csv_rejects_non_csv():
     client = TestClient(create_app())
     response = client.post(
-        "/api/v1/univariate/csv",
+        "/api/v2/analysis/univariate/csv",
         files={"file": ("uni.txt", b"x", "text/plain")},
     )
     assert response.status_code == 400

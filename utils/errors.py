@@ -36,3 +36,10 @@ class ProcessingError(DataCraftersException):
 
     def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
         super().__init__(message, status_code=422, details=details)
+
+
+class NotFoundError(DataCraftersException):
+    """Raised when a requested resource does not exist."""
+
+    def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
+        super().__init__(message, status_code=404, details=details)

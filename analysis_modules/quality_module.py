@@ -30,7 +30,8 @@ def build_quality(df: pd.DataFrame) -> dict:
         q1 = series.quantile(0.25)
         q3 = series.quantile(0.75)
         iqr = q3 - q1
-        outliers = series[(series < (q1 - 1.5 * iqr)) | (series > (q3 + 1.5 * iqr))]
+        outliers = series[(series < (q1 - 1.5 * iqr)) |
+                          (series > (q3 + 1.5 * iqr))]
         outlier_counts[col] = int(outliers.count())
 
     return {

@@ -32,6 +32,7 @@ matplotlib = "^3.8"
 seaborn = "^0.13"
 scipy = "^1.11"
 scikit-learn = "^1.4"
+sqlalchemy = "^2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4"

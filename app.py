@@ -8,6 +8,9 @@ from controllers.health_controller import router as health_router
 from controllers.analysis_controller import router as analysis_router
 from controllers.process_controller import router as process_router
 from controllers.analysis_v2_controller import router as analysis_v2_router
+from controllers.jobs_controller import router as jobs_router
+from controllers.datasets_controller import router as datasets_router
+from infrastructure.db.session import init_db
 from settings import settings
 from utils.errors import DataCraftersException
 from utils.logging import logger
@@ -18,6 +21,7 @@ from utils.tempfiles import TempFileManager
 async def lifespan(app: FastAPI):
     logger.info("app_startup", app_name=settings.app_name,
                 debug=settings.debug)
+    init_db()
     TempFileManager.cleanup_directory()
     yield
     logger.info("app_shutdown")
@@ -59,6 +63,8 @@ def create_app() -> FastAPI:
     app.include_router(process_router)
     app.include_router(analysis_router)
     app.include_router(analysis_v2_router)
+    app.include_router(jobs_router)
+    app.include_router(datasets_router)
     return app
 
 

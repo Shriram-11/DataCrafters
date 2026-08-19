@@ -23,7 +23,8 @@ def build_correlation(df: pd.DataFrame) -> dict:
             if i >= j:
                 continue
             coeff = float(corr.iloc[i, j])
-            pairs.append({"left": c1, "right": c2, "coefficient": coeff, "absolute": abs(coeff)})
+            pairs.append({"left": c1, "right": c2,
+                         "coefficient": coeff, "absolute": abs(coeff)})
     pairs.sort(key=lambda item: item["absolute"], reverse=True)
 
     return {
@@ -82,7 +83,8 @@ def build_recommendations(df: pd.DataFrame) -> dict:
 
         missing_pct = float(series.isnull().mean() * 100)
         if missing_pct >= 30:
-            recs.append("High missingness: consider dropping column or advanced imputation")
+            recs.append(
+                "High missingness: consider dropping column or advanced imputation")
         elif missing_pct > 0:
             recs.append("Has missing values: apply median/mode imputation")
 
@@ -97,16 +99,20 @@ def build_recommendations(df: pd.DataFrame) -> dict:
                 q3 = clean.quantile(0.75)
                 iqr = q3 - q1
                 if iqr > 0:
-                    outliers = clean[(clean < (q1 - 1.5 * iqr)) | (clean > (q3 + 1.5 * iqr))]
+                    outliers = clean[(clean < (q1 - 1.5 * iqr))
+                                     | (clean > (q3 + 1.5 * iqr))]
                     outlier_rate = float((outliers.count() / row_count) * 100)
                     if outlier_rate > 5:
-                        recs.append("Contains many outliers: cap/winsorize or robust-scale")
+                        recs.append(
+                            "Contains many outliers: cap/winsorize or robust-scale")
         else:
             unique_ratio = float(series.nunique(dropna=False) / row_count)
             if unique_ratio > 0.6:
-                recs.append("High-cardinality categorical: consider frequency/target encoding")
+                recs.append(
+                    "High-cardinality categorical: consider frequency/target encoding")
             elif 1 < series.nunique(dropna=False) <= 12:
-                recs.append("Low-cardinality categorical: one-hot encoding is suitable")
+                recs.append(
+                    "Low-cardinality categorical: one-hot encoding is suitable")
 
         if not recs:
             recs.append("No immediate issues detected")
